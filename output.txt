@@ -1,0 +1,18 @@
+Checking events in 1 day(s) from today..
+
+Event: NPA on 10.01.2025 10:00
+--> Ignored: No valid E-Mail address in description
+
+Event: SHK Meeting on 10.01.2025 14:00
+--> Ignored: No valid E-Mail address in description
+
+Event: tDCS Session on 10.01.2025 15:00
+--> Email sent successfully! From nnu-studien@ewi-psy.fu-berlin.de to XXX
+
+Event: 2211 rest 2 on 10.01.2025 15:30
+--> Ignored: No valid E-Mail address in description
+
+Checking events in 3 day(s) from today..
+
+Event: Baseline MRI on Sun on 12.01.2025 10:00
+--> Email sent successfully! From nnu-studien@ewi-psy.fu-berlin.de to XXX
