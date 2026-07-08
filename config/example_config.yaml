@@ -1,0 +1,30 @@
+# Example values only. Keep real credentials, tokens, passwords, and participant
+# paths outside Git.
+
+email_reminders:
+  calendar_id: "your-calendar-id@group.calendar.google.com"
+  days_before_appointment: [1, 3]
+  template: "email_reminders/templates/mri_reminder_de.txt"
+  google_credentials_path: "config/credentials.json"
+  google_token_path: "config/token.json"
+  recipient_source: "lookup"
+  reauth_notify_email_env: "STUDY_REAUTH_NOTIFY_EMAIL"
+  protected_lookup_files:
+    matching_list_path_env: "STUDY_MATCHING_LIST"
+    matching_list_password_env: "STUDY_MATCHING_PASSWORD"
+    screening_list_path_env: "STUDY_SCREENING_LIST"
+    screening_list_password_env: "STUDY_SCREENING_PASSWORD"
+  smtp_environment_variables:
+    server: "STUDY_SMTP_SERVER"
+    port: "STUDY_SMTP_PORT"
+    user: "STUDY_SMTP_USER"
+    password: "STUDY_SMTP_PASSWORD"
+    from_email: "STUDY_FROM_EMAIL"
+
+mri_screenshot_generator:
+  session: "base"
+  network_dicom_root: "\\\\server\\study\\DICOM"
+  work_dir: "H:\\study\\t1_snapshot_work"
+  snapshot_dir: "H:\\study\\t1_snapshots"
+  log: "H:\\study\\t1_snapshots\\t1_snapshot_log.csv"
+  dcm2niix: "C:\\path\\to\\dcm2niix.exe"

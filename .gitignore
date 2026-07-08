@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local credentials and secrets
+.env
+*.env
+credentials.json
+token.json
+config/credentials.json
+config/token.json
+
+# Local logs and scheduler exports
+*.log
+output*.txt
+script-scheduler.xml
+run_apptReminder.bat
+
+# Participant-derived or generated MRI data
+work/
+snapshots/
+*.dcm
+*.nii
+*.nii.gz
+*.bval
+*.bvec
+*.json
+!config/example_config.yaml
+
+# Local binaries
+dcm2niix
+dcm2niix.exe

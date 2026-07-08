@@ -1,33 +1,98 @@
-# Automatic email reminder based on google calendar entries
-The code can be used to automatically send reminder emails to participants when their appointment is upcoming. It checks your google calendar for all upcoming appointments on specified days in the future (e.g., tomorrow or in 3 days) and takes the email from the description of the event to send a template reminder email.
+# Automated Participant Workflow
 
-1) Create Google Calendar API
-	- Create a Google Cloud project and enable the API:
-		1.	Go to the Google Cloud Console.
-		2.	Create a new project.
-		3.	Enable the Google Calendar API for the project.
-		4.	Create OAuth 2.0 credentials:
-		•	Type: Desktop App
-		•	Download the credentials.json file.
+Automation tools developed for participant-facing MRI/neuroscience study workflows. Originally designed for the [MeMoSLAP study](https://memoslap.de/en/home).
 
-	- Allow certain users (e.g. your own email account) to access the app during testing:
-		1.	Go to the Google Cloud Console.
-		2.	Navigate to APIs & Services > OAuth consent screen.
-		3.	Under “Test users,” add the email addresses of users who should have access.
-		4.	Save the changes.
+```text
+Participant enrolled
+        |
+Reminder emails
+        |
+Study completion
+        |
+MRI souvenir generated
+```
 
-2) Adjust the scripts 
-   	- input your email details & email content in apptReminder.py
-   	- use your own google created credentials.json (see 1)
-   	- create your own token.json
-   	- create your own scheduler on Windows (see 3)
-  
-3) Set a recurring execution of the batch script with Windows Scheduler
-	- Open Task Scheduler by searching for it in the Start menu.
-	- Click on "Create Basic Task..." in the Actions pane.
-	- Name your task and provide a description, then click "Next".
-	- Choose "Daily" and click "Next".
-	- Set the start date and time, then click "Next".
-	- Choose "Start a program" and click "Next".
-	- Click "Browse..." and select the run_apptReminder.bat file you created.
-	- Click "Next", then "Finish".
+This repository currently supports two practical workflow steps:
+
+- scheduled reminder emails from Google Calendar events
+- individualized structural MRI screenshot generation after study completion
+
+The code is intentionally small and operational. It documents the workflow without committing credentials, participant data, DICOM files, NIfTI files, or generated private outputs.
+
+## Repository layout
+
+```text
+automated-participant-workflow/
+|-- email_reminders/
+|   |-- templates/
+|   `-- send_reminders.py
+|-- mri_screenshot_generator/
+|   `-- generate_screenshots.py
+|-- config/
+|   `-- example_config.yaml
+|-- docs/
+|   |-- email_reminders_setup.md
+|   |-- workflow.md
+|   `-- privacy_and_security.md
+|-- README.md
+|-- .gitignore
+`-- requirements.txt
+```
+
+## Setup
+
+Install the Python dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Use `config/example_config.yaml` as a reference for local settings. Google OAuth files live locally at:
+
+```text
+config/credentials.json
+config/token.json
+```
+
+Both files are ignored by Git.
+
+## Reminder emails
+
+The reminder script reads events from a Google Calendar. In the running workflow, the calendar description contains a participant/study ID rather than an email address. The script resolves that ID through local password-protected study spreadsheets, then sends the German MRI appointment reminder template.
+
+```powershell
+$env:STUDY_CALENDAR_ID="your-calendar-id@group.calendar.google.com"
+$env:STUDY_SMTP_SERVER="smtp.example.org"
+$env:STUDY_SMTP_USER="your-login@example.org"
+$env:STUDY_SMTP_PASSWORD="local-password-or-app-password"
+$env:STUDY_FROM_EMAIL="study-team@example.org"
+$env:STUDY_MATCHING_LIST="H:\private\matching-list.xlsx"
+$env:STUDY_MATCHING_PASSWORD="local-file-password"
+$env:STUDY_SCREENING_LIST="H:\private\screening-list.xlsm"
+$env:STUDY_SCREENING_PASSWORD="local-file-password"
+$env:STUDY_REAUTH_NOTIFY_EMAIL="maintainer@example.org"
+
+python .\email_reminders\send_reminders.py --days 1 3
+```
+
+Use `--dry-run` while checking calendar parsing and recipient lookup. For older/test events that contain an email directly in the calendar description, use `--recipient-source description-email`. If token refresh fails during scheduled execution, rerun manually with `RUN_MANUALLY=true` to refresh the local token.
+
+Detailed setup notes are in `docs/email_reminders_setup.md`.
+
+## MRI screenshots
+
+The MRI snapshot generator inspects zipped DICOM exports, selects the most likely T1 anatomical series, converts it with `dcm2niix`, and saves a text-free sagittal/coronal/axial PNG.
+
+```powershell
+python .\mri_screenshot_generator\generate_screenshots.py `
+  --subjects 2275 2276 `
+  --work-dir H:\study\t1_snapshot_work `
+  --snapshot-dir H:\study\t1_snapshots `
+  --log H:\study\t1_snapshots\t1_snapshot_log.csv
+```
+
+Local working files and generated screenshots are ignored by Git because they may derive from participant scans.
+
+## Security Note
+
+Credential files, tokens, private spreadsheet paths, participant data, and generated MRI outputs are not tracked. See `docs/privacy_and_security.md` for the project hygiene notes.
